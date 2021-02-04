@@ -12,6 +12,6 @@ public interface GameDao {
 
     boolean updateGame(int id);//probably just be used to update the isFinished state
 
-    Game addGame(Game newGame); //used to add game to the tables
+    Game addGame(Game newGame, String playerName); //used to add game to the tables
 
 }
