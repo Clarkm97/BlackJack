@@ -1,3 +1,6 @@
+DROP DATABASE if EXISTS blackjack;
+CREATE DATABASE IF NOT EXISTS blackjack;
+
 create table cards
 (
 	cardId int auto_increment
