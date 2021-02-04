@@ -1,14 +1,18 @@
 package com.sg.blackjack.data;
 
 import com.sg.blackjack.model.Game;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public class GameDaoImpl implements GameDao {
+@Repository
+public class GameDataBaseDao implements GameDao {
+
 
 
     @Override
     public List<Game> getAllGames() {
+
         return null;
     }
 
