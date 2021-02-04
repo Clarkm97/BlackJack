@@ -35,8 +35,8 @@ public class BlackJackController {
 
     }
 
-    @PostMapping("/game/{action}") // action = hit or stay
-    public Game playGame(@PathVariable String action) {
+    @PostMapping("/game/{gameId}/{action}") // action = hit or stay
+    public Game playGame(@PathVariable int gameId,String action) {
         // returns updated version of game after action
         return null;
     }
