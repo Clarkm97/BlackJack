@@ -83,7 +83,7 @@ public class GameDataBaseDao implements GameDao {
             Game gameMapper = new Game();
             gameMapper.setGameId(rs.getInt("GameId"));
             gameMapper.setDealerId(rs.getInt("dealerId"));
-            gameMapper.setDealerId(rs.getInt("playerId"));
+            gameMapper.setPlayerId(rs.getInt("playerId"));
             gameMapper.setFinished(rs.getBoolean("isFinished"));
             return gameMapper;
         }
