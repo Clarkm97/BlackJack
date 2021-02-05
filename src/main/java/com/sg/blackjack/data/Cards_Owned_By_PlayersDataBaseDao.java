@@ -2,6 +2,7 @@ package com.sg.blackjack.data;
 
 import com.sg.blackjack.model.Cards;
 import com.sg.blackjack.model.Cards_Owned_By_Players;
+import com.sg.blackjack.model.Game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +16,11 @@ public class Cards_Owned_By_PlayersDataBaseDao implements Cards_Owned_By_Players
 
     @Autowired
     JdbcTemplate jdbc;
+    private final GameDao dao;
+
+    public Cards_Owned_By_PlayersDataBaseDao(GameDao dao) {
+        this.dao = dao;
+    }
 
     @Override
     public List<Cards_Owned_By_Players> getAllPlayersCards() {
@@ -50,6 +56,14 @@ public class Cards_Owned_By_PlayersDataBaseDao implements Cards_Owned_By_Players
 
         Cards temp = jdbc.queryForObject(sql,new CardsMapper2(), playerID);
         return temp.getValue();
+    }
+
+    @Override
+    public List<Cards> getCardsNotOwnedByPlayers(int gameId) {
+        Game game = dao.findByGameID(gameId);
+        final String sql = "SELECT * from cards WHERE NOT EXISTS( SELECT cardId FROM cards_owned_by_players WHERE cards_owned_by_players.cardId = cards.cardId AND cards_owned_by_players.playerId = ? )\n" +
+                " AND NOT EXISTS ((SELECT cardId FROM cards_owned_by_players WHERE cards_owned_by_players.cardId = cards.cardId AND cards_owned_by_players.playerId = ? ));";
+        return jdbc.query(sql,new CardsMapper(),game.getDealerId(),game.getPlayerId());
     }
 
 

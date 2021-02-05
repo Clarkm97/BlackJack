@@ -15,4 +15,8 @@ public interface Cards_Owned_By_PlayersDao {
 
     int totalCardValueByPlayer(int playerID);//used to get the total of card value of a player
 
+    List<Cards> getCardsNotOwnedByPlayers(int gameId);
+
+
+
 }
