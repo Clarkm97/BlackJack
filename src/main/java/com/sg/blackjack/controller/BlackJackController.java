@@ -1,9 +1,10 @@
 package com.sg.blackjack.controller;
 
+import com.sg.blackjack.data.CardsDao;
 import com.sg.blackjack.data.GameDao;
-import com.sg.blackjack.data.GameDataBaseDao;
+import com.sg.blackjack.model.Cards;
 import com.sg.blackjack.model.Game;
-import com.sg.blackjack.model.Player;
+import com.sg.blackjack.service.BlackJackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +17,31 @@ import java.util.List;
 public class BlackJackController {
 
     private final GameDao gameDao;
-
+    private final CardsDao cardsDao;
+    private final BlackJackServiceImpl service;
     @Autowired
-    public BlackJackController(GameDao gameDao) {
+    public BlackJackController(GameDao gameDao, BlackJackServiceImpl service, CardsDao cardsDao) {
         this.gameDao = gameDao;
+        this.service = service;
+        this.cardsDao = cardsDao;
+
     }
 
     @PostMapping("/begin/{name}")
     @ResponseStatus(HttpStatus.CREATED)
     public Game beginGame(@PathVariable String name) {
         // creates game and two players (dealer/player)
-        return gameDao.addGame(new Game(), name);
+
+        Game game = gameDao.addGame(new Game(), name);
+        List<Cards> cardsList = cardsDao.getAllCards();
+
+        // deal 2 cards to player, 2 cards to dealer to start game
+        cardsList = service.dealCard(cardsList, game.getPlayerId());
+        cardsList = service.dealCard(cardsList, game.getPlayerId());
+        cardsList = service.dealCard(cardsList, game.getDealerId());
+        cardsList = service.dealCard(cardsList, game.getDealerId());
+        return game;
+
     }
     @GetMapping("/game")
     public List<Game> allGames(){
@@ -46,6 +61,7 @@ public class BlackJackController {
     @PostMapping("/game/{gameId}/{action}") // action = hit or stay
     public Game playGame(@PathVariable int gameId,String action) {
         // returns updated version of game after action
+
         return null;
     }
 

@@ -1,12 +1,13 @@
 package com.sg.blackjack.service;
 
 import com.sg.blackjack.model.Cards;
+import com.sg.blackjack.model.Game;
 
 import java.util.List;
 
 public interface BlackJackService {
 
-    List<Cards> shuffleDeck(); // get cards from DB and shuffle.
 
-    Cards dealCard(List<Cards> deck);
+
+    List<Cards> dealCard(List<Cards> deck, int playerId);
 }

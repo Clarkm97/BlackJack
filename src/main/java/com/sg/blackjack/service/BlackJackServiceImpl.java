@@ -1,7 +1,12 @@
 package com.sg.blackjack.service;
 
 import com.sg.blackjack.data.CardsDataBaseDao;
+import com.sg.blackjack.data.Cards_Owned_By_PlayersDao;
+import com.sg.blackjack.data.Cards_Owned_By_PlayersDataBaseDao;
+import com.sg.blackjack.data.GameDataBaseDao;
 import com.sg.blackjack.model.Cards;
+import com.sg.blackjack.model.Cards_Owned_By_Players;
+import com.sg.blackjack.model.Game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -14,41 +19,23 @@ import java.util.List;
 public class BlackJackServiceImpl implements BlackJackService {
 
     final JdbcTemplate jdbc;
+    final Cards_Owned_By_PlayersDataBaseDao cardsOwnedByPlayersDataBaseDao;
 
     @Autowired
-    public BlackJackServiceImpl(JdbcTemplate jdbcTemplate) {
+    public BlackJackServiceImpl(JdbcTemplate jdbcTemplate, Cards_Owned_By_PlayersDataBaseDao cardsOwnedByPlayersDataBaseDao) {
         this.jdbc = jdbcTemplate;
+        this.cardsOwnedByPlayersDataBaseDao = cardsOwnedByPlayersDataBaseDao;
+
     }
 
+
+
     @Override
-    public List<Cards> shuffleDeck() {
-
-        final String sql = "SELECT * FROM cards;";
-        List<Cards> deck = jdbc.query(sql, new CardsDataBaseDao.CardsMapper());
-
+    public List<Cards> dealCard(List<Cards> deck, int playerId) {
         Collections.shuffle(deck);
-
+        cardsOwnedByPlayersDataBaseDao.addCardsOwnedByPlayer(deck.get(0).getCardId(),playerId);
+        deck.remove(0);
         return deck;
-    }
-
-    @Override
-    public Cards dealCard(List<Cards> deck) {
-
-        List<Cards> playerHand = new ArrayList<>();
-        List<Cards> dealerHand = new ArrayList<>();
-
-        int lastCard = deck.size() - 1;
-
-        for(int i = 0; i < 2; i++) {
-            playerHand.add(deck.get(lastCard));
-            deck.remove(lastCard);
-            lastCard--;
-            dealerHand.add(deck.get(lastCard));
-            deck.remove(lastCard);
-            lastCard--;
-        }
-
-        return null;
     }
 
 
