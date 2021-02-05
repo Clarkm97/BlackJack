@@ -33,7 +33,7 @@ public class BlackJackController {
         // return list of all games in database
         return gameDao.getAllGames();
     }
-    @@GetMapping("/game/{gameId}")
+    @GetMapping("/game/{gameId}")
     public ResponseEntity<Game> getGame(@PathVariable int gameId){
         // returns 1 game based on given Id
         Game result = gameDao.findByGameID(gameId);
