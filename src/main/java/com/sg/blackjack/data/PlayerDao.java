@@ -8,7 +8,7 @@ public interface PlayerDao {
 
     List<Player> getAllPlayers();//list of all players
 
-    List<Player> findPlayerByID(int id);//finding a player based on playerID
+    Player findPlayerByID(int id);//finding a player based on playerID
 
-    Player addPlayer(Player newPlayer);//add a new player to the table
+    int addPlayer(Player newPlayer);//add a new player to the table
 }
