@@ -1,9 +1,6 @@
 package com.sg.blackjack.service;
 
-import com.sg.blackjack.data.CardsDataBaseDao;
-import com.sg.blackjack.data.Cards_Owned_By_PlayersDao;
-import com.sg.blackjack.data.Cards_Owned_By_PlayersDataBaseDao;
-import com.sg.blackjack.data.GameDataBaseDao;
+import com.sg.blackjack.data.*;
 import com.sg.blackjack.model.Cards;
 import com.sg.blackjack.model.Cards_Owned_By_Players;
 import com.sg.blackjack.model.Game;
@@ -20,12 +17,13 @@ public class BlackJackServiceImpl implements BlackJackService {
 
     final JdbcTemplate jdbc;
     final Cards_Owned_By_PlayersDataBaseDao cardsOwnedByPlayersDataBaseDao;
+    final GameDao gameDao;
 
     @Autowired
-    public BlackJackServiceImpl(JdbcTemplate jdbcTemplate, Cards_Owned_By_PlayersDataBaseDao cardsOwnedByPlayersDataBaseDao) {
+    public BlackJackServiceImpl(JdbcTemplate jdbcTemplate, Cards_Owned_By_PlayersDataBaseDao cardsOwnedByPlayersDataBaseDao, GameDao gameDao) {
         this.jdbc = jdbcTemplate;
         this.cardsOwnedByPlayersDataBaseDao = cardsOwnedByPlayersDataBaseDao;
-
+        this.gameDao = gameDao;
     }
 
 
@@ -47,5 +45,24 @@ public class BlackJackServiceImpl implements BlackJackService {
         return deck;
     }
 
+    @Override
+    public List<Cards> hit(int gameId, String action) {
+
+        int playerId = gameDao.findByGameID(gameId).getPlayerId();
+        int dealerId = gameDao.findByGameID(gameId).getDealerId();
+
+        List<Cards> playerHand = cardsOwnedByPlayersDataBaseDao.getCardsByPlayerID(playerId);
+
+        // draw a card and add to player hand
+        // playerHand.add(deck.get(0));
+
+        // add to db.
+        //cardsOwnedByPlayersDataBaseDao.addCardsOwnedByPlayer(deck.get(0).getCardId() ,playerId);
+
+        // remove card from deck
+        // deck.remove(0);
+
+        return null;
+    }
 
 }
