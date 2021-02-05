@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 @Repository
 public class PlayerDataBaseDao implements PlayerDao {
@@ -37,10 +37,23 @@ public class PlayerDataBaseDao implements PlayerDao {
     @Override
     @Transactional
     public int addPlayer(Player newPlayer) {
-        final String sql = "Insert into player('playerName') Values(?)";
-        jdbc.update(sql,newPlayer.getPlayerName());
-        int playerID = jdbc.queryForObject("Select LAST_INSERT_ID()",Integer.class);
-        return playerID;
+        final String sql = "Insert into player(playerName) Values(?)";
+
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbc.update((Connection conn) -> {
+            PreparedStatement stmt = conn.prepareStatement(
+                    sql,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            stmt.setString(1, newPlayer.getPlayerName());
+
+            return stmt;
+        }, keyHolder);
+
+        newPlayer.setPlayerId(keyHolder.getKey().intValue());
+
+        return newPlayer.getPlayerId();
 
     }
 

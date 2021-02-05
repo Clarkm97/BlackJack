@@ -5,10 +5,10 @@ import com.sg.blackjack.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 @Repository
@@ -55,9 +55,19 @@ public class GameDataBaseDao implements GameDao {
         int playerId = playerDao.addPlayer(player);
 
         final String sql = "INSERT INTO game (dealerId, playerId, isFinished) VALUES (?, ?, ?);";
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbc.update(sql, dealerId, playerId, false);
+        jdbc.update((Connection conn) -> {
+            PreparedStatement stmt = conn.prepareStatement(
+                    sql,
+                    Statement.RETURN_GENERATED_KEYS);
 
+            stmt.setInt(1, dealerId);
+            stmt.setInt(2,playerId);
+            stmt.setBoolean(3, false);
+            return stmt;
+        }, keyHolder);
+        newGame.setGameId(keyHolder.getKey().intValue());
         newGame.setFinished(false);
         newGame.setPlayerId(playerId);
         newGame.setDealerId(dealerId);
