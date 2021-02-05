@@ -1,6 +1,8 @@
 package com.sg.blackjack.data;
 
 import com.sg.blackjack.model.Cards;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -9,9 +11,14 @@ import java.sql.SQLException;
 import java.util.List;
 @Repository
 public class CardsDataBaseDao implements CardsDao{
+
+    @Autowired
+    JdbcTemplate jdbc;
+
     @Override
     public List<Cards> getAllCards() {
-        return null;
+        final String sql = "SELECT * FROM Cards;";
+        return jdbc.query(sql, new CardsMapper());
     }
 
     @Override
