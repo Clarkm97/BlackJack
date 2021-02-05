@@ -1,6 +1,7 @@
 package com.sg.blackjack.controller;
 
 import com.sg.blackjack.data.CardsDao;
+import com.sg.blackjack.data.Cards_Owned_By_PlayersDao;
 import com.sg.blackjack.data.GameDao;
 import com.sg.blackjack.model.Cards;
 import com.sg.blackjack.model.Game;
@@ -19,12 +20,14 @@ public class BlackJackController {
     private final GameDao gameDao;
     private final CardsDao cardsDao;
     private final BlackJackServiceImpl service;
+
+    private final Cards_Owned_By_PlayersDao cobpDao;
     @Autowired
-    public BlackJackController(GameDao gameDao, BlackJackServiceImpl service, CardsDao cardsDao) {
+    public BlackJackController(GameDao gameDao, BlackJackServiceImpl service, CardsDao cardsDao,Cards_Owned_By_PlayersDao cobpDao) {
         this.gameDao = gameDao;
         this.service = service;
         this.cardsDao = cardsDao;
-
+        this.cobpDao = cobpDao;
     }
 
     @PostMapping("/begin/{name}")
@@ -57,6 +60,14 @@ public class BlackJackController {
         }
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/game/{gameId}")
+    public List<Cards> getPlayerCards(@PathVariable int gameId){
+
+        Game temp = gameDao.findByGameID(gameId);
+        return cobpDao.getCardsByPlayerID(temp.getPlayerId());
+    }
+
 
     @PostMapping("/game/{gameId}/{action}") // action = hit or stay
     public Game playGame(@PathVariable int gameId,String action) {
