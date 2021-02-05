@@ -38,5 +38,14 @@ public class BlackJackServiceImpl implements BlackJackService {
         return deck;
     }
 
+    @Override
+    public List<Cards> dealerHand(List<Cards> deck, int playerId) {
+        while(cardsOwnedByPlayersDataBaseDao.totalCardValueByPlayer(playerId)<17){
+        Collections.shuffle(deck);
+        cardsOwnedByPlayersDataBaseDao.addCardsOwnedByPlayer(deck.get(0).getCardId(),playerId);
+        deck.remove(0);}
+        return deck;
+    }
+
 
 }

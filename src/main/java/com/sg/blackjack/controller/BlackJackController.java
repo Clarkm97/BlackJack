@@ -72,6 +72,8 @@ public class BlackJackController {
     public List<Cards> getDealerCards(@PathVariable int gameId){
 
         Game temp = gameDao.findByGameID(gameId);
+        List<Cards> cardsList = cardsDao.getAllCards();
+        service.dealerHand( cardsList ,temp.getDealerId());
         return cobpDao.getCardsByPlayerID(temp.getDealerId());
     }
 

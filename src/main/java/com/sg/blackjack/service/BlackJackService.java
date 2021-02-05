@@ -10,4 +10,6 @@ public interface BlackJackService {
 
 
     List<Cards> dealCard(List<Cards> deck, int playerId);
+
+    List<Cards> dealerHand(List<Cards> deck, int playerId);
 }
