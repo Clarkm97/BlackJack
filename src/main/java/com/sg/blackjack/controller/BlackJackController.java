@@ -20,8 +20,8 @@ public class BlackJackController {
     private final GameDao gameDao;
     private final CardsDao cardsDao;
     private final BlackJackServiceImpl service;
-
     private final Cards_Owned_By_PlayersDao cobpDao;
+
     @Autowired
     public BlackJackController(GameDao gameDao, BlackJackServiceImpl service, CardsDao cardsDao,Cards_Owned_By_PlayersDao cobpDao) {
         this.gameDao = gameDao;
@@ -79,9 +79,12 @@ public class BlackJackController {
 
 
     @PostMapping("/game/{gameId}/{action}") // action = hit or stay
-    public Game playGame(@PathVariable int gameId,String action) {
+    public Game playGame(@PathVariable int gameId, String action) {
         // returns updated version of game after action
-
+        if(action.equals("hit")) {
+            service.hit(gameId, action);
+        }
+        gameDao.findByGameID(gameId);
         return null;
     }
 
