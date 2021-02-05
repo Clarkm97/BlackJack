@@ -61,11 +61,18 @@ public class BlackJackController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/game/{gameId}")
+    @GetMapping("/player/{gameId}")
     public List<Cards> getPlayerCards(@PathVariable int gameId){
 
         Game temp = gameDao.findByGameID(gameId);
         return cobpDao.getCardsByPlayerID(temp.getPlayerId());
+    }
+
+    @GetMapping("/dealer/{gameId}")
+    public List<Cards> getDealerCards(@PathVariable int gameId){
+
+        Game temp = gameDao.findByGameID(gameId);
+        return cobpDao.getCardsByPlayerID(temp.getDealerId());
     }
 
 
