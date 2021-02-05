@@ -1,5 +1,6 @@
 package com.sg.blackjack.data;
 
+import com.sg.blackjack.model.Cards;
 import com.sg.blackjack.model.Cards_Owned_By_Players;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,9 +23,12 @@ public class Cards_Owned_By_PlayersDataBaseDao implements Cards_Owned_By_Players
     }
 
     @Override
-    public List<Cards_Owned_By_Players> getCardsByPlayerID(int playerID) {
-        final String sql = "Select * from cards_owned_by_players where playerId = ?";
-        return jdbc.query(sql,new CardsOwnedByPlayersMapper(),playerID);
+    public List<Cards> getCardsByPlayerID(int playerID) {
+        final String sql = "Select * from cards_owned_by_players\n" +
+                "join cards\n" +
+                "on Cards_Owned_By_Players.cardId = cards.cardId\n" +
+                "where playerId = ?";
+        return jdbc.query(sql,new CardsMapper(),playerID);
 
     }
 
@@ -35,8 +39,18 @@ public class Cards_Owned_By_PlayersDataBaseDao implements Cards_Owned_By_Players
 
     }
 
+    @Override
+    public int totalCardValueByPlayer(int playerID) {
+        final String sql = "Select sum(`value`) as sumPoint\n" +
+                "from Cards_Owned_By_Players\n" +
+                "join cards\n" +
+                "on Cards_Owned_By_Players.cardId = cards.cardId\n" +
+                "where playerid =?;";
+        //int total =jdbc.query(sql, playerID);
 
-
+        Cards temp = jdbc.queryForObject(sql,new CardsMapper2(), playerID);
+        return temp.getValue();
+    }
 
 
     public static final class CardsOwnedByPlayersMapper implements RowMapper<Cards_Owned_By_Players>{
@@ -50,4 +64,25 @@ public class Cards_Owned_By_PlayersDataBaseDao implements Cards_Owned_By_Players
         }
 
     }
+
+    public static final class CardsMapper implements RowMapper<Cards>{
+
+        @Override
+        public Cards mapRow(ResultSet rs, int i) throws SQLException {
+            Cards cardRunner  = new Cards();
+            cardRunner.setDescription(rs.getString("description"));
+            return cardRunner;
+        }
+    }
+    public static final class CardsMapper2 implements RowMapper<Cards>{
+
+        @Override
+        public Cards mapRow(ResultSet rs, int i) throws SQLException {
+            Cards cardRunner  = new Cards();
+            cardRunner.setValue(rs.getInt("sumPoint"));
+            return cardRunner;
+        }
+    }
+
+
 }
