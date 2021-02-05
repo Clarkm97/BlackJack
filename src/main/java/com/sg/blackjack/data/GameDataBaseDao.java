@@ -1,6 +1,5 @@
 package com.sg.blackjack.data;
 
-import com.sg.blackjack.model.Cards_Owned_By_Players;
 import com.sg.blackjack.model.Game;
 import com.sg.blackjack.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,25 +15,32 @@ import java.util.List;
 public class GameDataBaseDao implements GameDao {
 
     private final JdbcTemplate jdbc;
+    private final PlayerDao playerDao;
 
     @Autowired
-    public GameDataBaseDao(JdbcTemplate jdbcTemplate) {
+    public GameDataBaseDao(JdbcTemplate jdbcTemplate, PlayerDao playerDao) {
         this.jdbc = jdbcTemplate;
+        this.playerDao = playerDao;
     }
 
     @Override
     public List<Game> getAllGames() {
-        return null;
+        final String sql = "SELECT * FROM game;";
+        return jdbc.query(sql, new GameMapper());
     }
 
     @Override
     public Game findByGameID(int id) {
-        return null;
+        final String sql = "SELECT * FROM game WHERE gameId = ?;";
+        return jdbc.queryForObject(sql, new GameMapper(), id);
     }
 
     @Override
     public boolean updateGame(int id) {
-        return false;
+        final String sql = "UPDATE game SET isFinished = true " +
+                           "WHERE gameId = ?;";
+        jdbc.update(sql, id);
+        return true;
     }
 
     @Override
@@ -45,11 +51,18 @@ public class GameDataBaseDao implements GameDao {
         Player player = new Player();
         player.setPlayerName(playerName);
 
+        int dealerId = playerDao.addPlayer(dealer);
+        int playerId = playerDao.addPlayer(player);
 
+        final String sql = "INSERT INTO game (dealerId, playerId, isFinished) VALUES (?, ?, ?);";
+
+        jdbc.update(sql, dealerId, playerId, false);
 
         newGame.setFinished(false);
+        newGame.setPlayerId(playerId);
+        newGame.setDealerId(dealerId);
 
-        return null;
+        return newGame;
     }
 
     public static final class GameMapper implements RowMapper<Game> {
